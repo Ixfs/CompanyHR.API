@@ -28,4 +28,8 @@ public class ApplicationDbContext : DbContext
         });
     }
 }
+
+public DbSet<RefreshToken> RefreshTokens { get; set; }
+public DbSet<Position> Positions { get; set; }
+
 EOF
