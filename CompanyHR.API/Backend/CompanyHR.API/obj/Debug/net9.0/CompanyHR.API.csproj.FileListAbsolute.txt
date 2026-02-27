@@ -1,0 +1,8 @@
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.csproj.AssemblyReference.cache
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\rpswa.dswa.cache.json
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.AssemblyInfoInputs.cache
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.AssemblyInfo.cs
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.csproj.CoreCompileInputs.cache
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\student110\Desktop\CompanyHR.API\Backend\CompanyHR.API\obj\Debug\net9.0\CompanyHR.API.MvcApplicationPartsAssemblyInfo.cache
