@@ -15,6 +15,9 @@ using CompanyHR.API.DTOs.Responses;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
+using CompanyHR.API.Extensions;
+using CompanyHR.API.Enums;
+using CompanyHR.API.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
