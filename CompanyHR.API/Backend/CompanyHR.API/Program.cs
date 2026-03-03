@@ -76,6 +76,17 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddHostedService<EmployeeNotificationService>();
 
+// Регистрация Unit of Work и репозиториев
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+// Регистрация сервисов
+builder.Services.AddScoped<IPositionService, PositionService>();
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
+
+builder.Services.AddDistributedMemoryCache();
+
 // ========== Swagger (OpenAPI) ==========
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
