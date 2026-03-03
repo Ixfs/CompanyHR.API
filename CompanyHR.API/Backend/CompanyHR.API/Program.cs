@@ -8,6 +8,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
+using CompanyHR.API.Filters;
+using CompanyHR.API.Constants;
+using CompanyHR.API.DTOs.Responses;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,15 +25,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавление контроллеров с настройками JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
-{
-    options.Filters.Add<ValidateModelAttribute>(); // Глобальное применение фильтра валидации
-})
-.AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-})
-.AddFluentValidationAutoValidation();
+    {
+        // Настройка формата дат
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        
+        // Игнорирование циклических ссылок
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        
+        // Формат дат
+        options.JsonSerializerOptions.Converters.Add(new IsoDateTimeConverter
+        {
+            DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ"
+        });
+        
+        // Использование camelCase для свойств (стандарт для JSON API)
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        
+        // Игнорирование null значений (опционально)
+        options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    });
 
 // ========== База данных ==========
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -70,6 +87,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero // уменьшаем допустимый сдвиг времени
         };
     });
+
+// ========== Автоматическая валидация DTO =============
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // ========== Авторизация (роли) ==========
 builder.Services.AddAuthorization();
