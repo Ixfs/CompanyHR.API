@@ -18,13 +18,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Добавление контроллеров с настройками JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
-    {
-        // Игнорирование циклических ссылок (если они есть)
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        // Конвертация дат в формат ISO
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    })
-    .AddFluentValidationAutoValidation(); // Автоматическая валидация через FluentValidation
+{
+    options.Filters.Add<ValidateModelAttribute>(); // Глобальное применение фильтра валидации
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+})
+.AddFluentValidationAutoValidation();
 
 // ========== База данных ==========
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -75,6 +77,21 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddHostedService<EmployeeNotificationService>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(ApplicationConstants.Policies.RequireAdmin, 
+        policy => policy.RequireRole(Roles.Admin));
+    
+    options.AddPolicy(ApplicationConstants.Policies.RequireHR, 
+        policy => policy.RequireRole(Roles.HR));
+    
+    options.AddPolicy(ApplicationConstants.Policies.RequireAdminOrHR, 
+        policy => policy.RequireRole(Roles.Admin, Roles.HR));
+    
+    options.AddPolicy(ApplicationConstants.Policies.RequireManager, 
+        policy => policy.RequireRole(Roles.Manager));
+});
 
 // Регистрация Unit of Work и репозиториев
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -151,6 +168,20 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowCredentials();
     });
+
+    builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFlutterApp", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:8080",      // Flutter web
+                "http://localhost:5000",      // Сам API
+                "http://localhost:3000")      // Альтернативный порт
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
 
     // Более широкая политика для разработки (опционально)
     options.AddPolicy("Development", policy =>
@@ -261,14 +292,10 @@ else
     app.UseCors("FlutterClient");
 }
 
-// Аутентификация и авторизация (порядок важен)
+app.UseCors("AllowFlutterApp");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Маршрутизация контроллеров
 app.MapControllers();
-
-// ========================================================
-// 4. Запуск приложения
-// ========================================================
 app.Run();
